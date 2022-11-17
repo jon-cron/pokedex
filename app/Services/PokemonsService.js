@@ -12,18 +12,38 @@ class PokemonsService {
   async getPokemons() {
     const res = await pokeApi.get();
     appState.pokemons = res.data.results;
-    console.log(appState.pokemons);
+    // console.log(appState.pokemons);
   }
   async getOnePokemon(name) {
     const res = await pokeApi.get(name);
     console.log(res.data);
     appState.activePokemon = new Pokemon(res.data);
   }
+
   async getThatPokemon() {
     let pokemon = appState.activePokemon;
     const res = await myApi.post("", pokemon);
-    console.log("[Got Pokemon]", res.data);
-    appState.myPokemon = res.data;
+    // console.log("[Got Pokemon]", res.data);
+    appState.myPokemon = [...appState.myPokemon, new Pokemon(res.data)];
+    console.log(appState.myPokemon);
+  }
+  async GetMyPokemon() {
+    const res = await myApi.get();
+    console.log(res.data);
+    appState.myPokemon = res.data.map((p) => new Pokemon(p));
+  }
+  async getOneMyPokemon(id) {
+    let pokemon = appState.myPokemon.find((p) => p.id == id);
+    appState.activePokemon = pokemon;
+  }
+  async removePokemon() {
+    let removePokemon = appState.activePokemon;
+    const res = await myApi.delete(removePokemon.id);
+    console.log("deleted", res.data);
+    appState.myPokemon = appState.myPokemon.filter(
+      (p) => p.id != removePokemon.id
+    );
+    appState.activePokemon = null;
   }
 }
 

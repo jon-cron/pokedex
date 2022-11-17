@@ -12,15 +12,23 @@ function _drawPokeList() {
 }
 function _drawActive() {
   let active = appState.activePokemon;
-  let template = "";
   setHTML("active-pokemon", active.ActivePokemon);
+}
+function _drawMyPokemon() {
+  let pokemons = appState.myPokemon;
+  let template = "";
+  pokemons.forEach((p) => (template += p.MyPokemonTemplate));
+  setHTML("my-pokemon", template);
 }
 
 export class PokemonsController {
   constructor() {
     this.getPokemons();
+    this.getMyPokemon();
     appState.on("pokemons", _drawPokeList);
     appState.on("activePokemon", _drawActive);
+    appState.on("myPokemon", _drawMyPokemon);
+    _drawPokeList();
   }
   async getPokemons() {
     try {
@@ -35,5 +43,25 @@ export class PokemonsController {
   }
   async getThatPokemon() {
     await pokemonsService.getThatPokemon();
+  }
+  async getMyPokemon() {
+    try {
+      await pokemonsService.GetMyPokemon();
+    } catch (error) {
+      Pop.error(error);
+      console.error(error);
+    }
+  }
+  async getOneMyPokemon(id) {
+    await pokemonsService.getOneMyPokemon(id);
+    console.log(id);
+  }
+  async removePokemon() {
+    try {
+      await pokemonsService.removePokemon();
+    } catch (error) {
+      Pop.error(error);
+      console.error(error);
+    }
   }
 }
